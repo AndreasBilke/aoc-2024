@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::env;
 use std::fs;
 
@@ -28,27 +29,30 @@ pub fn read_file(file_name: &String) -> Vec<String> {
 }
 
 pub fn process(lines: &Vec<String>) -> usize {
-    let mut left_list: Vec<i64> = Vec::new();
-    let mut right_list: Vec<i64> = Vec::new();
+    let mut left_list: Vec<usize> = Vec::new();
+    let mut right_list: Vec<usize> = Vec::new();
 
     lines.iter().for_each(|line| {
         let mut split = line.split("   ");
-        let left_str = split.next().unwrap();
-        let left_num = left_str.parse::<i64>().unwrap();
-
-        let right_str = split.next().unwrap();
-        let right_num = right_str.parse::<i64>().unwrap();
+        let left_num = split.next().unwrap().parse::<usize>().unwrap();
+        let right_num = split.next().unwrap().parse::<usize>().unwrap();
 
         left_list.push(left_num);
         right_list.push(right_num);
     });
 
-    let result: usize = left_list.iter().map(|left_num| {
-        let occurrence = right_list.iter()
-            .filter(|&right_num| left_num == right_num)
-            .count();
+    let occurrence = right_list.iter()
+        .fold(HashMap::<usize, usize>::new(), |mut o, item| {
+            *o.entry(*item).or_default() += 1;
+            o
+        });
 
-        (left_num * occurrence as i64) as usize
+    let result = left_list.iter().map(|&left_num| {
+        let count = match occurrence.get_key_value(&left_num) {
+            Some(c) => *c.1,
+            None => 0
+        };
+        left_num * count
     }).sum();
 
     result
