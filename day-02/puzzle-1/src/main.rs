@@ -1,6 +1,5 @@
 use std::env;
 use std::fs;
-use adjacent_pair_iterator::AdjacentPairIterator;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -46,9 +45,11 @@ pub fn process(lines: &Vec<String>) -> usize {
 }
 
 fn is_valid(nums: &Vec<i64>) -> bool {
-    let diffs: Vec<i64> = nums.adjacent_pairs().map(|t| {
-        t.1 - t.0
-    }).collect();
+    let diffs: Vec<i64> = nums
+        .windows(2)
+        .map(|t| {
+            t[1] - t[0]
+        }).collect();
 
     // check if differences are between -3..-1 or 1..3
     let diffs_ok = diffs.iter().all(|d| {

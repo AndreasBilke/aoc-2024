@@ -4,5 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-adjacent-pair-iterator = "1.0.0"
 itertools = "0.13.0"
