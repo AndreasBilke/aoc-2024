@@ -47,13 +47,14 @@ pub fn process(lines: &Vec<String>) -> usize {
             o
         });
 
-    let result = left_list.iter().map(|&left_num| {
+    let result = left_list.iter().fold(0usize, |r, left_num| {
         let count = match occurrence.get_key_value(&left_num) {
             Some(c) => *c.1,
             None => 0
         };
-        left_num * count
-    }).sum();
+
+        r + left_num * count
+    });
 
     result
 }
