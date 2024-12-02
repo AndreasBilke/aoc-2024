@@ -47,8 +47,8 @@ pub fn process(lines: &Vec<String>) -> usize {
     left_list.sort();
     right_list.sort();
 
-    let result: i64 = zip(left_list, right_list)
-        .fold(0, |r, e| r + e.0.abs_diff(e.1) as i64);
+    let result: u64 = zip(left_list, right_list)
+        .fold(0u64, |r, e| r + e.0.abs_diff(e.1));
 
     result as usize
 }
