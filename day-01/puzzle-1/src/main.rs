@@ -1,5 +1,6 @@
 use std::env;
 use std::fs;
+use std::iter::zip;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -46,9 +47,8 @@ pub fn process(lines: &Vec<String>) -> usize {
     left_list.sort();
     right_list.sort();
 
-    let result: i64 = left_list.iter().zip(right_list.iter())
-        .map(|(l, r)| (l - r).abs())
-        .sum();
+    let result: i64 = zip(left_list, right_list)
+        .fold(0, |r, e| r + e.0.abs_diff(e.1) as i64);
 
     result as usize
 }
