@@ -30,21 +30,64 @@ pub fn read_file(file_name: &String) -> Vec<String> {
 }
 
 pub fn process(lines: &Vec<String>) -> usize {
-    let map = Map::from(lines);
+    let mut map = Map::from(lines);
 
+    let initial_guard_pos = map.guard.0;
+    let (_, initial_trace) = map.walk_till_end();
+    let mut full_trace = explode_positions(initial_trace);
+    full_trace.remove(&initial_guard_pos);
+
+    let working_copy = Map::from(lines);
     let mut loop_counter = 0;
-    (0..=map.max_pos.0).for_each(|x| {
-        (0..=map.max_pos.1).for_each(|y| {
-            if !map.obstacles.contains(&(x, y)) {
-                let mut new_map = Map::from_map(&map, (x, y));
-                if new_map.has_loop() {
-                    loop_counter += 1;
-                }
-            }
-        });
+    full_trace.iter().for_each(|p| {
+        let mut new_map = Map::from_map(&working_copy, *p);
+        let (is_loop, _) = new_map.walk_till_end();
+        if is_loop {
+            loop_counter += 1;
+        }
     });
 
     loop_counter
+}
+
+fn explode_positions(ranges: HashSet<Walk>) -> HashSet<Position> {
+    let mut positions: HashSet<Position> = HashSet::new();
+
+    ranges.iter().for_each(|w| {
+        let new_pos = match w {
+            VerticalRange(y_from, y_to, x) => {
+                let mut items: Vec<Position> = vec![];
+                let (from, to) = if y_to < y_from {
+                    (y_to, y_from)
+                } else {
+                    (y_from, y_to)
+                };
+
+                for y in *from..=*to {
+                    items.push((*x, y));
+                }
+
+                items
+            },
+            HorizontalRange(x_from, x_to, y) => {
+                let mut items: Vec<Position> = vec![];
+                let (from, to) = if x_to < x_from {
+                    (x_to, x_from)
+                } else {
+                    (x_from, x_to)
+                };
+
+                for x in *from..=*to {
+                    items.push((x, *y));
+                }
+
+                items
+            }
+        };
+        positions.extend(new_pos);
+    });
+
+    positions
 }
 
 type Position = (u64, u64);
@@ -100,7 +143,7 @@ impl Map {
         obstacles.insert(new_obs);
 
         let guard = other.guard.clone();
-        let max_pos = other.max_pos;
+        let max_pos = other.max_pos.clone();
 
         Map { obstacles, guard, max_pos }
     }
@@ -134,7 +177,7 @@ impl Map {
         Map { obstacles, guard, max_pos }
     }
 
-    pub fn has_loop(&mut self) -> bool {
+    pub fn walk_till_end(&mut self) -> (bool, HashSet<Walk>) {
         let mut ranges: HashSet<Walk> = HashSet::new();
 
         let is_loop = loop {
@@ -142,6 +185,7 @@ impl Map {
             if ranges.contains(&walk) {
                 break true;
             }
+            ranges.insert(walk.clone());
             match walk {
                 HorizontalRange(_, x_to, _) => {
                     if x_to == 0 || x_to == self.max_pos.0 {
@@ -154,10 +198,9 @@ impl Map {
                     }
                 },
             }
-            ranges.insert(walk);
         };
 
-        is_loop
+        (is_loop, ranges)
     }
 
     pub fn walk(&mut self) -> Walk {
