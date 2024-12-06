@@ -35,7 +35,6 @@ pub fn process(lines: &Vec<String>) -> usize {
     let mut loop_counter = 0;
     (0..=map.max_pos.0).for_each(|x| {
         (0..=map.max_pos.1).for_each(|y| {
-            // also check of x,y is not next to guard
             if !map.obstacles.contains(&(x, y)) {
                 let mut new_map = Map::from_map(&map, (x, y));
                 if new_map.has_loop() {
