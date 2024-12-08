@@ -65,8 +65,9 @@ impl Equation {
             possible_results.iter().for_each(|p_r| {
                 new_results.push(p_r + e);
                 new_results.push(p_r * e);
-                // concatenate the ugly way :)
-                let s = format!("{}{}", p_r, e).parse::<u64>().unwrap();
+
+                // thanks https://github.com/thekatze/advent-of-code/blob/main/src/year2024/day07.rs
+                let s = p_r * 10u64.pow(e.ilog10() + 1) + e;
                 new_results.push(s);
             });
             possible_results = new_results;
