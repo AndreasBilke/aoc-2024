@@ -1,0 +1,9 @@
+[package]
+name = "puzzle-2"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+itertools = "0.13.0"
+strum = { version = "0.26.3", features=["derive"]}
+strum_macros = "0.26.4"
