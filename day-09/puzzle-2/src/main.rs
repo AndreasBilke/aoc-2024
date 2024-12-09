@@ -48,12 +48,12 @@ pub fn process(lines: &Vec<String>) -> usize {
         disk_index += amount as usize;
     }
 
-    defragnent(&mut blocks, &mut empty_indicies);
+    defragment(&mut blocks, &mut empty_indicies);
 
     compute_checksum(&blocks) as usize
 }
 
-fn defragnent(data_blocks: &mut Vec<Block>, empty_blocks: &mut Vec<(usize, u64)>) {
+fn defragment(data_blocks: &mut Vec<Block>, empty_blocks: &mut Vec<(usize, u64)>) {
     // idea: start from last block, find first big enough block in empty_blocks
     // update data_block start index
     // remove/split empty_block from list
