@@ -107,6 +107,6 @@ mod tests {
     fn test_part() {
         let result = process(&read_file(&String::from("../test-input")));
 
-        assert_eq!(result, 43);
+        assert_eq!(result, 81);
     }
 }
