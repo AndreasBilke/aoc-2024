@@ -70,21 +70,14 @@ impl Map {
         }
 
         let possible_neighbours = vec![
-            self.points.get(&Point {x: from.x - 1, y: from.y, height: -1}),
-            self.points.get(&Point {x: from.x + 1, y: from.y, height: -1}),
-            self.points.get(&Point {x: from.x, y: from.y + 1, height: -1}),
-            self.points.get(&Point {x: from.x, y: from.y - 1, height: -1})
+            self.points.get(&Point {x: from.x - 1, y: from.y, height: from.height + 1}),
+            self.points.get(&Point {x: from.x + 1, y: from.y, height: from.height + 1}),
+            self.points.get(&Point {x: from.x, y: from.y + 1, height: from.height + 1}),
+            self.points.get(&Point {x: from.x, y: from.y - 1, height: from.height + 1})
         ];
-        let new_neighbours: Vec<&Option<&Point>> = possible_neighbours.iter().filter(|p| {
-            if let Some(p) = p {
-                p.height == from.height + 1
-            } else {
-                false
-            }
-        }).collect();
 
         let mut distinct_paths = 0;
-        new_neighbours.iter().for_each(|p| {
+        possible_neighbours.iter().for_each(|p| {
             if let Some(p) = p {
                 distinct_paths += self.explore_from_point(p)
             }
@@ -94,28 +87,11 @@ impl Map {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Hash, Eq, PartialEq)]
 struct Point {
     x: i64,
     y: i64,
     height: i64
-}
-
-impl Hash for Point {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.x.hash(state);
-        self.y.hash(state);
-    }
-}
-
-impl PartialEq<Self> for Point {
-    fn eq(&self, other: &Self) -> bool {
-        // a point is equal of the coordinates are equal
-        self.x == other.x && self.y == other.y
-    }
-}
-
-impl Eq for Point {
 }
 
 #[cfg(test)]
